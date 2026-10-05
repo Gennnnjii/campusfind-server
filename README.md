@@ -2,6 +2,8 @@
 
 CampusFind is a campus lost-and-found and claim management application backed by Express, MongoDB Atlas, and Mongoose. The implemented Member 3 backend owns claim submission and review, SDAO turnover and return rules, activity logs, and the shared demo seed verification needed by those workflows.
 
+The consolidated project explanation is maintained in the client repository as [CampusFind Complete Project Documentation](https://github.com/Gennnnjii/campusfind-client/blob/feat/claims-sdao/docs/CAMPUSFIND_COMPLETE_DOCUMENTATION.md).
+
 ## Setup
 
 Requirements: Node.js 20 or newer and a MongoDB Atlas connection string.
