@@ -7,6 +7,8 @@ const claimsRouter = require('./routes/claims')
 const activityLogsRouter = require('./routes/activityLogs')
 const sdaoRouter = require('./routes/sdao')
 const itemClaimsRouter = require('./routes/itemClaims')
+const categoriesRouter = require('./routes/categories')
+const locationsRouter = require('./routes/locations')
 
 const app = express()
 
@@ -24,6 +26,8 @@ app.use('/api/claims', claimsRouter)
 app.use('/api/activity-logs', activityLogsRouter)
 app.use('/api/sdao', sdaoRouter)
 app.use('/api/items', itemClaimsRouter)
+app.use('/api/categories', categoriesRouter)
+app.use('/api/locations', locationsRouter)
 
 app.use((req, res) => {
   res.status(404).json({
