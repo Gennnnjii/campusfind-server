@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const CLAIM_STATUSES = ['Pending', 'Approved', 'Rejected']
+const CLAIM_STATUSES = ['pending', 'approved', 'rejected']
 
 const claimSchema = new mongoose.Schema({
   item: {
@@ -42,7 +42,7 @@ const claimSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: CLAIM_STATUSES,
-    default: 'Pending',
+    default: 'pending',
     required: true,
     index: true
   },
@@ -61,7 +61,7 @@ claimSchema.index(
   { item: 1, status: 1 },
   {
     unique: true,
-    partialFilterExpression: { status: 'Approved' },
+    partialFilterExpression: { status: 'approved' },
     name: 'one_approved_claim_per_item'
   }
 )
@@ -70,7 +70,7 @@ claimSchema.index(
   { item: 1, claimantEmail: 1, status: 1 },
   {
     unique: true,
-    partialFilterExpression: { status: 'Pending' },
+    partialFilterExpression: { status: 'pending' },
     name: 'one_pending_claim_per_email_item'
   }
 )

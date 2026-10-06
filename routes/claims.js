@@ -10,7 +10,7 @@ const router = express.Router()
 router.get('/', asyncHandler(async (req, res) => {
   const filter = {}
   if (req.query.status) {
-    if (!['Pending', 'Approved', 'Rejected'].includes(req.query.status)) {
+    if (!['pending', 'approved', 'rejected'].includes(req.query.status)) {
       throw new HttpError(400, 'Invalid claim status filter')
     }
     filter.status = req.query.status

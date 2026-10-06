@@ -30,15 +30,15 @@ function verifyRelationships({ items, claims, activities }) {
     }
   })
 
-  items.filter((item) => item.status === 'Returned').forEach((item) => {
+  items.filter((item) => item.status === 'returned').forEach((item) => {
     assert(
-      claims.some((claim) => claim.item.equals(item._id) && claim.status === 'Approved'),
+      claims.some((claim) => claim.item.equals(item._id) && claim.status === 'approved'),
       `Returned item ${item.title} has no approved claim`
     )
   })
 
   const approvedPerItem = new Map()
-  claims.filter((claim) => claim.status === 'Approved').forEach((claim) => {
+  claims.filter((claim) => claim.status === 'approved').forEach((claim) => {
     const key = claim.item.toString()
     approvedPerItem.set(key, (approvedPerItem.get(key) || 0) + 1)
   })

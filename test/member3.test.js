@@ -42,17 +42,17 @@ test('item schema prevents a Lost item from using a Found lifecycle status', asy
     description: 'A sufficiently detailed description for model validation.',
     category: new mongoose.Types.ObjectId(),
     location: new mongoose.Types.ObjectId(),
-    type: 'Lost',
+    type: 'lost',
     dateOccurred: new Date('2026-10-01T00:00:00Z'),
-    status: 'Available for Claim'
+    status: 'available_for_claim'
   })
 
-  await assert.rejects(invalidItem.validate(), /not valid for a Lost item/)
+  await assert.rejects(invalidItem.validate(), /not valid for a lost item/)
 })
 
 test('claim eligibility accepts only Found items that are Available for Claim', () => {
-  assert.doesNotThrow(() => assertClaimableItem({ type: 'Found', status: 'Available for Claim' }))
+  assert.doesNotThrow(() => assertClaimableItem({ type: 'found', status: 'available_for_claim' }))
   assert.throws(() => assertClaimableItem(null), /Found item not found/)
-  assert.throws(() => assertClaimableItem({ type: 'Lost', status: 'Open' }), /only be submitted for Found/)
-  assert.throws(() => assertClaimableItem({ type: 'Found', status: 'Returned' }), /not available for claim/)
+  assert.throws(() => assertClaimableItem({ type: 'lost', status: 'open' }), /only be submitted for Found/)
+  assert.throws(() => assertClaimableItem({ type: 'found', status: 'returned' }), /not available for claim/)
 })
