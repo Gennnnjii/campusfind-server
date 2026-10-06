@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
-const ITEM_TYPES = ['Lost', 'Found']
-const LOST_STATUSES = ['Open', 'Recovered']
-const FOUND_STATUSES = ['Pending Turnover', 'Available for Claim', 'Returned']
+const ITEM_TYPES = ['lost', 'found']
+const LOST_STATUSES = ['open', 'recovered']
+const FOUND_STATUSES = ['pending_turnover', 'available_for_claim', 'returned']
 const ITEM_STATUSES = [...LOST_STATUSES, ...FOUND_STATUSES]
 
 const itemSchema = new mongoose.Schema({
@@ -59,7 +59,7 @@ const itemSchema = new mongoose.Schema({
 })
 
 itemSchema.pre('validate', function validateStatus() {
-  const allowedStatuses = this.type === 'Lost' ? LOST_STATUSES : FOUND_STATUSES
+  const allowedStatuses = this.type === 'lost' ? LOST_STATUSES : FOUND_STATUSES
   if (this.type && this.status && !allowedStatuses.includes(this.status)) {
     this.invalidate('status', `${this.status} is not valid for a ${this.type} item`)
   }

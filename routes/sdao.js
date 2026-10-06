@@ -19,11 +19,11 @@ router.get('/overview', asyncHandler(async (req, res) => {
   }
 
   const [awaitingTurnover, availableForClaim, pendingClaims, approvedClaims, returnedItems] = await Promise.all([
-    Item.find({ type: 'Found', status: 'Pending Turnover' }).populate(itemPopulate).sort({ createdAt: -1 }),
-    Item.find({ type: 'Found', status: 'Available for Claim' }).populate(itemPopulate).sort({ createdAt: -1 }),
-    Claim.find({ status: 'Pending' }).populate(claimPopulate).sort({ createdAt: -1 }),
-    Claim.find({ status: 'Approved' }).populate(claimPopulate).sort({ reviewedAt: -1 }),
-    Item.find({ type: 'Found', status: 'Returned' }).populate(itemPopulate).sort({ updatedAt: -1 })
+    Item.find({ type: 'found', status: 'pending_turnover' }).populate(itemPopulate).sort({ createdAt: -1 }),
+    Item.find({ type: 'found', status: 'available_for_claim' }).populate(itemPopulate).sort({ createdAt: -1 }),
+    Claim.find({ status: 'pending' }).populate(claimPopulate).sort({ createdAt: -1 }),
+    Claim.find({ status: 'approved' }).populate(claimPopulate).sort({ reviewedAt: -1 }),
+    Item.find({ type: 'found', status: 'returned' }).populate(itemPopulate).sort({ updatedAt: -1 })
   ])
 
   res.json({

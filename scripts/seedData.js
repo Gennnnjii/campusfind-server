@@ -38,40 +38,40 @@ const locations = locationNames.map((name, index) => ({
 }))
 
 const foundBlueprints = [
-  ['Black wireless earbuds', 'Pending Turnover'],
-  ['Blue insulated tumbler', 'Pending Turnover'],
-  ['Scientific calculator', 'Pending Turnover'],
-  ['Canvas pencil case', 'Pending Turnover'],
-  ['Silver house keys', 'Pending Turnover'],
-  ['Gray zip hoodie', 'Pending Turnover'],
-  ['USB flash drive', 'Pending Turnover'],
-  ['Red compact umbrella', 'Pending Turnover'],
-  ['Student organization lanyard', 'Pending Turnover'],
-  ['Paperback statistics book', 'Pending Turnover'],
-  ['Black leather wallet', 'Available for Claim'],
-  ['Rose gold wristwatch', 'Available for Claim'],
-  ['Green document envelope', 'Available for Claim'],
-  ['White charging case', 'Available for Claim'],
-  ['Navy drawstring bag', 'Available for Claim'],
-  ['Prescription eyeglasses', 'Available for Claim'],
-  ['Tablet sleeve', 'Returned'],
-  ['Brass dormitory key', 'Returned'],
-  ['Maroon notebook', 'Returned'],
-  ['Digital voice recorder', 'Returned']
+  ['Black wireless earbuds', 'pending_turnover'],
+  ['Blue insulated tumbler', 'pending_turnover'],
+  ['Scientific calculator', 'pending_turnover'],
+  ['Canvas pencil case', 'pending_turnover'],
+  ['Silver house keys', 'pending_turnover'],
+  ['Gray zip hoodie', 'pending_turnover'],
+  ['USB flash drive', 'pending_turnover'],
+  ['Red compact umbrella', 'pending_turnover'],
+  ['Student organization lanyard', 'pending_turnover'],
+  ['Paperback statistics book', 'pending_turnover'],
+  ['Black leather wallet', 'available_for_claim'],
+  ['Rose gold wristwatch', 'available_for_claim'],
+  ['Green document envelope', 'available_for_claim'],
+  ['White charging case', 'available_for_claim'],
+  ['Navy drawstring bag', 'available_for_claim'],
+  ['Prescription eyeglasses', 'available_for_claim'],
+  ['Tablet sleeve', 'returned'],
+  ['Brass dormitory key', 'returned'],
+  ['Maroon notebook', 'returned'],
+  ['Digital voice recorder', 'returned']
 ]
 
 const lostBlueprints = [
-  ['University identification card', 'Open'],
-  ['Laptop charger', 'Open'],
-  ['Geometry reference book', 'Open'],
-  ['Brown card holder', 'Recovered'],
-  ['Mechanical pencil set', 'Recovered'],
-  ['Fitness tracker', 'Recovered']
+  ['University identification card', 'open'],
+  ['Laptop charger', 'open'],
+  ['Geometry reference book', 'open'],
+  ['Brown card holder', 'recovered'],
+  ['Mechanical pencil set', 'recovered'],
+  ['Fitness tracker', 'recovered']
 ]
 
 const itemBlueprints = [
-  ...foundBlueprints.map(([title, status]) => ({ title, status, type: 'Found' })),
-  ...lostBlueprints.map(([title, status]) => ({ title, status, type: 'Lost' }))
+  ...foundBlueprints.map(([title, status]) => ({ title, status, type: 'found' })),
+  ...lostBlueprints.map(([title, status]) => ({ title, status, type: 'lost' }))
 ]
 
 const items = itemBlueprints.map((blueprint, index) => ({
@@ -87,12 +87,12 @@ const items = itemBlueprints.map((blueprint, index) => ({
 }))
 
 const claimBlueprints = [
-  [10, 'Pending'], [10, 'Pending'],
-  [11, 'Rejected'], [11, 'Pending'],
-  [12, 'Approved'], [12, 'Rejected'],
-  [13, 'Pending'],
-  [16, 'Approved'], [16, 'Rejected'],
-  [17, 'Approved'], [18, 'Approved'], [19, 'Approved']
+  [10, 'pending'], [10, 'pending'],
+  [11, 'rejected'], [11, 'pending'],
+  [12, 'approved'], [12, 'rejected'],
+  [13, 'pending'],
+  [16, 'approved'], [16, 'rejected'],
+  [17, 'approved'], [18, 'approved'], [19, 'approved']
 ]
 
 const claims = claimBlueprints.map(([itemIndex, status], index) => ({
@@ -103,8 +103,8 @@ const claims = claimBlueprints.map(([itemIndex, status], index) => ({
   proofDescription: `Private verification detail ${index + 1}: identifies a distinctive feature that is not displayed on the public item page.`,
   referenceCode: `CF-202609${String(10 + index).padStart(2, '0')}-${String(index + 1).padStart(6, '0')}`,
   status,
-  reviewNote: status === 'Rejected' ? 'The submitted identifying details did not match the item.' : '',
-  ...(status !== 'Pending' ? { reviewedAt: new Date(Date.UTC(2026, 8, 22 + (index % 7), 9)) } : {})
+  reviewNote: status === 'rejected' ? 'The submitted identifying details did not match the item.' : '',
+  ...(status !== 'pending' ? { reviewedAt: new Date(Date.UTC(2026, 8, 22 + (index % 7), 9)) } : {})
 }))
 
 const activities = []
@@ -122,7 +122,7 @@ items.forEach((item) => {
   })
 })
 
-items.filter((item) => item.type === 'Found' && item.status !== 'Pending Turnover').forEach((item) => {
+items.filter((item) => item.type === 'found' && item.status !== 'pending_turnover').forEach((item) => {
   addActivity({
     item: item._id,
     action: 'turnover_confirmed',
@@ -138,18 +138,18 @@ claims.forEach((claim) => {
     action: 'claim_submitted',
     message: `Claim ${claim.referenceCode} was submitted for ${item.title}.`
   })
-  if (claim.status !== 'Pending') {
+  if (claim.status !== 'pending') {
     addActivity({
       item: claim.item,
       claim: claim._id,
-      action: claim.status === 'Approved' ? 'claim_approved' : 'claim_rejected',
-      message: `Claim ${claim.referenceCode} was ${claim.status.toLowerCase()}.`
+      action: claim.status === 'approved' ? 'claim_approved' : 'claim_rejected',
+      message: `Claim ${claim.referenceCode} was ${claim.status}.`
     })
   }
 })
 
-items.filter((item) => item.status === 'Returned').forEach((item) => {
-  const approvedClaim = claims.find((claim) => claim.item.equals(item._id) && claim.status === 'Approved')
+items.filter((item) => item.status === 'returned').forEach((item) => {
+  const approvedClaim = claims.find((claim) => claim.item.equals(item._id) && claim.status === 'approved')
   addActivity({
     item: item._id,
     claim: approvedClaim._id,
@@ -158,7 +158,7 @@ items.filter((item) => item.status === 'Returned').forEach((item) => {
   })
 })
 
-items.filter((item) => item.status === 'Recovered').forEach((item) => {
+items.filter((item) => item.status === 'recovered').forEach((item) => {
   addActivity({
     item: item._id,
     action: 'item_recovered',

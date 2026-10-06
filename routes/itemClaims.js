@@ -16,7 +16,7 @@ router.get('/:id/claim-eligibility', asyncHandler(async (req, res) => {
     throw new HttpError(404, 'Item not found')
   }
 
-  const eligible = item.type === 'Found' && item.status === 'Available for Claim'
+  const eligible = item.type === 'found' && item.status === 'available_for_claim'
   res.json({
     data: {
       item,

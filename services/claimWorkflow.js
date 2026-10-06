@@ -9,10 +9,10 @@ function assertClaimableItem(item) {
   if (!item) {
     throw new HttpError(404, 'Found item not found')
   }
-  if (item.type !== 'Found') {
+  if (item.type !== 'found') {
     throw new HttpError(400, 'Claims can only be submitted for Found items')
   }
-  if (item.status !== 'Available for Claim') {
+  if (item.status !== 'available_for_claim') {
     throw new HttpError(400, 'This item is not available for claim')
   }
 }
@@ -34,7 +34,7 @@ async function submitClaim(payload) {
     const existingPendingClaim = await Claim.exists({
       item: item._id,
       claimantEmail: claim.claimantEmail,
-      status: 'Pending'
+      status: 'pending'
     }).session(session)
 
     if (existingPendingClaim) {
@@ -58,10 +58,10 @@ async function submitClaim(payload) {
 }
 
 async function reviewClaim({ claimId, status, reviewNote = '' }) {
-  if (!['Approved', 'Rejected'].includes(status)) {
+  if (!['approved', 'rejected'].includes(status)) {
     throw new HttpError(400, 'Status must be Approved or Rejected')
   }
-  if (status === 'Rejected' && reviewNote.trim().length < 5) {
+  if (status === 'rejected' && reviewNote.trim().length < 5) {
     throw new HttpError(400, 'A short review note is required when rejecting a claim')
   }
 
@@ -70,7 +70,7 @@ async function reviewClaim({ claimId, status, reviewNote = '' }) {
     if (!claim) {
       throw new HttpError(404, 'Claim not found')
     }
-    if (claim.status !== 'Pending') {
+    if (claim.status !== 'pending') {
       throw new HttpError(400, 'Only Pending claims can be reviewed')
     }
 
@@ -85,15 +85,15 @@ async function reviewClaim({ claimId, status, reviewNote = '' }) {
     const logs = [{
       item: item._id,
       claim: claim._id,
-      action: status === 'Approved' ? 'claim_approved' : 'claim_rejected',
-      message: `Claim ${claim.referenceCode} was ${status.toLowerCase()}.`
+      action: status === 'approved' ? 'claim_approved' : 'claim_rejected',
+      message: `Claim ${claim.referenceCode} was ${status}.`
     }]
 
-    if (status === 'Approved') {
+    if (status === 'approved') {
       const competingClaims = await Claim.find({
         _id: { $ne: claim._id },
         item: item._id,
-        status: 'Pending'
+        status: 'pending'
       }).select('_id referenceCode').session(session)
 
       if (competingClaims.length > 0) {
@@ -101,7 +101,7 @@ async function reviewClaim({ claimId, status, reviewNote = '' }) {
           { _id: { $in: competingClaims.map((candidate) => candidate._id) } },
           {
             $set: {
-              status: 'Rejected',
+              status: 'rejected',
               reviewNote: 'Automatically closed because another claim was approved.',
               reviewedAt: new Date()
             }
