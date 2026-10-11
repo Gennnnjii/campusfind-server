@@ -10,6 +10,7 @@ const itemClaimsRouter = require('./routes/itemClaims')
 const itemsRouter = require('./routes/items')
 const categoriesRouter = require('./routes/categories')
 const locationsRouter = require('./routes/locations')
+const statisticsRouter = require('./routes/statistics')
 
 const app = express()
 
@@ -30,6 +31,7 @@ app.use('/api/items', itemClaimsRouter)
 app.use('/api/items', itemsRouter)
 app.use('/api/categories', categoriesRouter)
 app.use('/api/locations', locationsRouter)
+app.use('/api/statistics', statisticsRouter)
 
 app.use((req, res) => {
   res.status(404).json({
