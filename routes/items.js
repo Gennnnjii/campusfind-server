@@ -11,6 +11,7 @@ const HttpError = require('../utils/HttpError')
 const runInTransaction = require('../utils/transaction')
 const { confirmTurnover, markReturned } = require('../services/sdaoWorkflow')
 const { resolveItemStatusTransition } = require('../services/itemStatusWorkflow')
+const { findPossibleMatches } = require('../services/itemMatching')
 
 const router = express.Router()
 
@@ -290,6 +291,55 @@ router.patch('/:id/status', asyncHandler(async (req, res) => {
 
   const recoveredItem = await Item.findById(recoveredId).populate('category location', 'name')
   res.json({ data: recoveredItem, message: 'Lost item marked Recovered successfully.' })
+}))
+
+router.get('/:id/matches', asyncHandler(async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    throw new HttpError(400, 'Invalid item ID')
+  }
+
+  const sourceItem = await Item.findById(req.params.id)
+    .select('_id title description type status category location dateOccurred claimLocation')
+    .lean()
+
+  if (!sourceItem) {
+    throw new HttpError(404, 'Item not found')
+  }
+
+  if (!['lost', 'found'].includes(sourceItem.type)) {
+    return res.json({ data: [] })
+  }
+
+  if (
+    (sourceItem.type === 'lost' && sourceItem.status === 'recovered') ||
+    (sourceItem.type === 'found' && sourceItem.status === 'returned')
+  ) {
+    return res.json({ data: [] })
+  }
+
+  const isActiveSource =
+    (sourceItem.type === 'lost' && sourceItem.status === 'open') ||
+    (sourceItem.type === 'found' && ['pending_turnover', 'available_for_claim'].includes(sourceItem.status))
+
+  if (!isActiveSource) {
+    return res.json({ data: [] })
+  }
+
+  const candidateFilter = {
+    type: sourceItem.type === 'lost' ? 'found' : 'lost',
+    status: sourceItem.type === 'lost' ? 'available_for_claim' : 'open',
+    _id: { $ne: sourceItem._id }
+  }
+
+  const candidateItems = await Item.find(candidateFilter)
+    .select('_id title description type status category location dateOccurred claimLocation')
+    .populate('category', '_id name')
+    .populate('location', '_id name')
+    .lean()
+
+  const matches = findPossibleMatches(sourceItem, candidateItems, 3)
+
+  res.json({ data: matches })
 }))
 
 router.get('/:id', asyncHandler(async (req, res) => {
